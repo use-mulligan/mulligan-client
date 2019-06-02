@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Component } from 'react'
 import {
   Text,
   TextInput,
@@ -7,59 +7,81 @@ import {
   StyleSheet,
   KeyboardAvoidingView
 } from 'react-native'
+import client from '../data/services/client'
+import UserLoginMutation from '../data/mutations/login'
 
-const Login = () => {
-  const [email, setEmail] = React.useState(0)
-  const [password, setPassword] = React.useState(1)
 
-  const submitCreds = (emailEntered, passwordEntered) => {
-    setEmail(emailEntered);
-    setPassword(passwordEntered);
+export default class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "Hey",
+      password: "Yo"
+    }
   }
 
-  return (
-    <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <View style={styles.loginContainer}>
-        <Text style={styles.loginTitle}>Mulligan</Text>
-        <Text>{email} {password}</Text>
-      </View>
-      <View style={styles.formContainer}>
-        <LoginForm onClick={submitCreds}/>
-      </View>
-    </KeyboardAvoidingView>
-  );
+  submitCreds = (emailEntered, passwordEntered) => {
+    console.log("Submitting creds...")
+
+    client.mutate({
+      variables: { email: emailEntered, password: passwordEntered },
+      mutation: UserLoginMutation,
+    }).then(result => { console.log(JSON.stringify(result)) })
+    .catch(error => { console.log(error) });
+  }
+
+  render() {
+    const { email, password } = this.state
+    return (
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginTitle}>Mulligan</Text>
+          <Text>{email} {password}</Text>
+        </View>
+        <View style={styles.formContainer}>
+          <LoginForm getCreds={(e, p) => this.submitCreds(e, p)}/>
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 }
 
-const LoginForm = ({onClick}) => {
-
-  handleSubmit = (email, password) => {
-    onClick.submitCreds(email, password)
+class LoginForm extends React.Component  {
+  constructor(props) {
+    super(props)
   }
 
-  return (
-    <>
-      <TextInput style = {styles.input}
-        autoCapitalize="none"
-        onSubmitEditing={() => this.passwordInput.focus()}
-        autoCorrect={false}
-        keyboardType='email-address'
-        returnKeyType="next"
-        ref={(input) => this.emailOrPhoneInput = input}
-        placeholder='Email or Mobile Num'
-        placeholderTextColor='rgba(225,225,225,0.7)'/>
+  handleSubmit = () => {
+    this.props.getCreds(this.email, this.password);
+  }
 
-      <TextInput style = {styles.input}
-        returnKeyType="go"
-        ref={(input)=> this.passwordInput = input}
-        placeholder='Password'
-        placeholderTextColor='rgba(225,225,225,0.7)'
-        secureTextEntry />
+  render() {
+    return (
+      <>
+        <TextInput style = {styles.input}
+          autoCapitalize="none"
+          onSubmitEditing={() => this.passwordInput.focus()}
+          autoCorrect={false}
+          keyboardType='email-address'
+          returnKeyType="next"
+          onChangeText={(input)=> this.email = input}
+          placeholder='Email or Mobile Num'
+          placeholderTextColor='rgba(225,225,225,0.7)'/>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => handleSubmit(emailOrPhoneInput, passwordInput)}>
-        <Text style={styles.buttonText}>LOGIN</Text>
-      </TouchableOpacity>
-    </>
-  )
+        <TextInput style = {styles.input}
+          returnKeyType="go"
+          onChangeText={(input)=> this.password = input}
+          placeholder='Password'
+          placeholderTextColor='rgba(225,225,225,0.7)'
+          secureTextEntry />
+
+        <TouchableOpacity style={styles.buttonContainer} onPress={this.handleSubmit}>
+          <Text style={styles.buttonText}>LOGIN</Text>
+        </TouchableOpacity>
+      </>
+    )
+
+  }
 }
 
 const styles = StyleSheet.create({
@@ -95,5 +117,3 @@ const styles = StyleSheet.create({
       fontWeight: '700'
   }
 });
-
-export default Login
