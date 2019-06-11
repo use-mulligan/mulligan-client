@@ -1,25 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ApolloProvider } from 'react-apollo';
-import client from './data/services/client'
+import { createStackNavigator, createAppContainer} from 'react-navigation'
+import LoginScreen from './components/Login';
+import HomeScreen from './components/Home';
 
-// Components
-import Login from './components/Login'
+const MainNavigator = createStackNavigator({
+  Login: {screen: LoginScreen},
+  Home: {screen: HomeScreen}
+})
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <ApolloProvider client={client} style={styles.container}>
-        <Login />
-        <View></View>
-      </ApolloProvider>
-    );
-  }
-}
+const App = createAppContainer(MainNavigator);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
+export default App;
