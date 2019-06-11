@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {
   Text,
   TextInput,
@@ -7,11 +7,22 @@ import {
   StyleSheet,
   KeyboardAvoidingView
 } from 'react-native'
+import { ApolloProvider } from 'react-apollo';
 import client from '../data/services/client'
 import UserLoginMutation from '../data/mutations/login'
 
+export default class LoginScreen extends React.Component {
+  render() {
+    return (
+      <ApolloProvider client={client} style={loginScreenStyles.container}>
+        <Login navigate={navigate}/>
+        <View></View>
+      </ApolloProvider>
+    )
+  }
+}
 
-export default class Login extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,25 +31,26 @@ export default class Login extends React.Component {
     }
   }
 
-  submitCreds = (emailEntered, passwordEntered) => {
-    console.log("Submitting creds...")
-
+  submitCreds =  async (emailEntered, passwordEntered) => {
     client.mutate({
       variables: { email: emailEntered, password: passwordEntered },
       mutation: UserLoginMutation,
-    }).then(result => { console.log(JSON.stringify(result)) })
+    }).then(result => {
+      console.log(JSON.stringify(result))
+      this.props.navigate('Home')
+    })
     .catch(error => { console.log(error) });
   }
 
   render() {
     const { email, password } = this.state
     return (
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <View style={styles.loginContainer}>
-          <Text style={styles.loginTitle}>Mulligan</Text>
+      <KeyboardAvoidingView behavior="padding" style={loginStyles.container}>
+        <View style={loginStyles.loginContainer}>
+          <Text style={loginStyles.loginTitle}>Mulligan</Text>
           <Text>{email} {password}</Text>
         </View>
-        <View style={styles.formContainer}>
+        <View style={loginStyles.formContainer}>
           <LoginForm getCreds={(e, p) => this.submitCreds(e, p)}/>
         </View>
       </KeyboardAvoidingView>
@@ -58,7 +70,7 @@ class LoginForm extends React.Component  {
   render() {
     return (
       <>
-        <TextInput style = {styles.input}
+        <TextInput style = {loginStyles.input}
           autoCapitalize="none"
           onSubmitEditing={() => this.passwordInput.focus()}
           autoCorrect={false}
@@ -68,15 +80,15 @@ class LoginForm extends React.Component  {
           placeholder='Email or Mobile Num'
           placeholderTextColor='rgba(225,225,225,0.7)'/>
 
-        <TextInput style = {styles.input}
+        <TextInput style = {loginStyles.input}
           returnKeyType="go"
           onChangeText={(input)=> this.password = input}
           placeholder='Password'
           placeholderTextColor='rgba(225,225,225,0.7)'
           secureTextEntry />
 
-        <TouchableOpacity style={styles.buttonContainer} onPress={this.handleSubmit}>
-          <Text style={styles.buttonText}>LOGIN</Text>
+        <TouchableOpacity style={loginStyles.buttonContainer} onPress={this.handleSubmit}>
+          <Text style={loginStyles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
       </>
     )
@@ -84,7 +96,7 @@ class LoginForm extends React.Component  {
   }
 }
 
-const styles = StyleSheet.create({
+const loginStyles = StyleSheet.create({
   container: {
       flex: 1,
       backgroundColor: '#2c3e50',
@@ -116,4 +128,11 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       fontWeight: '700'
   }
+});
+
+const loginScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
 });
