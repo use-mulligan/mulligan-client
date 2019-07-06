@@ -2,14 +2,16 @@ import React from "react";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import LoginScreen from "./components/Login";
 import HomeScreen from "./components/Home";
+import ScoreCardScreen from "./components/ScoreCard";
 
 const MainNavigator = createStackNavigator(
   {
     Login: LoginScreen,
-    Home: HomeScreen
+    Home: HomeScreen,
+    ScoreCard: ScoreCardScreen
   },
   {
-    initialRouteName: "Home"
+    initialRouteName: "Login"
   }
 );
 
