@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default class HomeScreen extends React.Component {
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <Home>
-        <StartGameButton />
+        <StartGameButton navigation={navigate} />
         <MyScoreCardsButton />
       </Home>
     );
@@ -23,7 +24,9 @@ class Home extends React.Component {
 }
 
 class StartGameButton extends React.Component {
-  startNewGame = () => {};
+  startNewGame = () => {
+    this.props.navigation("ScoreCard");
+  };
 
   render() {
     return (
@@ -38,7 +41,9 @@ class StartGameButton extends React.Component {
 }
 
 class MyScoreCardsButton extends React.Component {
-  getMyScoreCards = () => {};
+  getMyScoreCards = () => {
+    this.navigation;
+  };
 
   render() {
     return (
