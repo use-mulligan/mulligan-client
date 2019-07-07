@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  AsyncStorage
 } from "react-native";
 import { ApolloProvider } from "react-apollo";
 import client from "../data/services/client";
@@ -34,8 +35,9 @@ class Login extends React.Component {
         variables: { email: emailEntered, password: passwordEntered },
         mutation: UserLoginMutation
       })
-      .then(result => {
-        console.log(JSON.stringify(result));
+      .then(async ({ data }) => {
+        const token = data.login.token;
+        await AsyncStorage.setItem("@mulligan:access_token", token);
         this.props.navigation("Home");
       })
       .catch(error => {
