@@ -3,15 +3,17 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 import LoginScreen from "./components/Login";
 import HomeScreen from "./components/Home";
 import ScoreCardScreen from "./components/ScoreCard";
+import PlayerFormScreen from "./components/PlayerForm";
 
 const MainNavigator = createStackNavigator(
   {
     Login: LoginScreen,
     Home: HomeScreen,
-    ScoreCard: ScoreCardScreen
+    ScoreCard: ScoreCardScreen,
+    PlayerForm: PlayerFormScreen
   },
   {
-    initialRouteName: "Login"
+    initialRouteName: "Home"
   }
 );
 

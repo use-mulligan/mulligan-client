@@ -25,7 +25,7 @@ class Home extends React.Component {
 
 class StartGameButton extends React.Component {
   startNewGame = () => {
-    this.props.navigation("ScoreCard");
+    this.props.navigation("PlayerForm");
   };
 
   render() {

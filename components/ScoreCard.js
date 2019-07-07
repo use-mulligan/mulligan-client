@@ -5,13 +5,16 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ListView
 } from "react-native";
 
 const ScoreCardScreen = () => {
   const [strokes, setStrokes] = useState(0);
   const [holeNumber, setHoleNumber] = useState(1);
-  let [playersScore, setPlayersScore] = useState([{}]);
+  let [playersScore, setPlayersScore] = useState([]);
+  const [isGameOver, setIsGameOver] = useState(false);
+  let [totalStrokes, setTotalStrokes] = useState(0);
 
   addStroke = () => {
     setStrokes(strokes + 1);
@@ -23,50 +26,91 @@ const ScoreCardScreen = () => {
 
   finishHole = () => {
     if (holeNumber < 18) {
+      if (holeNumber == 1) {
+        setPlayersScore(
+          playersScore.concat([
+            {
+              playerName: "Props",
+              hole: holeNumber,
+              strokes: strokes
+            }
+          ])
+        );
+      } else {
+        setPlayersScore([
+          ...playersScore,
+          {
+            playerName: "Props",
+            hole: holeNumber,
+            strokes: strokes
+          }
+        ]);
+      }
       setHoleNumber(holeNumber + 1);
       setStrokes(0);
-
-      holeNumber == 1
-        ? setPlayersScore(
-            (playersScore = [
-              {
-                playerName: "Props",
-                hole: holeNumber,
-                strokes: strokes
-              }
-            ])
-          )
-        : setPlayersScore(
-            playersScore.concat([
-              { playerName: "Props", hole: holeNumber, strokes: strokes }
-            ])
-          );
     }
-    console.log(playersScore);
+  };
+
+  endGame = () => {
+    setPlayersScore([
+      ...playersScore,
+      {
+        playerName: "Props",
+        hole: holeNumber,
+        strokes: strokes
+      }
+    ]);
+    setIsGameOver(true);
+
+    playersScore.map(score => {
+      setTotalStrokes((totalStrokes += score.strokes));
+    });
   };
 
   return (
     <View>
-      <Text style={scoreCardStyles.holeNumberMessage}>Hole # {holeNumber}</Text>
-      <Text style={scoreCardStyles.strokesMessage}>Strokes: {strokes}</Text>
-      <TouchableOpacity
-        style={scoreCardStyles.buttonContainer}
-        onPress={addStroke}
-      >
-        <Text style={scoreCardStyles.buttonText}>+</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={scoreCardStyles.buttonContainer}
-        onPress={removeStroke}
-      >
-        <Text style={scoreCardStyles.buttonText}>-</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={scoreCardStyles.buttonContainer}
-        onPress={finishHole}
-      >
-        <Text style={scoreCardStyles.buttonText}>END HOLE</Text>
-      </TouchableOpacity>
+      {!isGameOver ? (
+        <>
+          <Text style={scoreCardStyles.holeNumberMessage}>
+            Hole # {holeNumber}
+          </Text>
+          <Text style={scoreCardStyles.strokesMessage}>Strokes: {strokes}</Text>
+          <TouchableOpacity
+            style={scoreCardStyles.buttonContainer}
+            onPress={addStroke}
+          >
+            <Text style={scoreCardStyles.buttonText}>+</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={scoreCardStyles.buttonContainer}
+            onPress={removeStroke}
+          >
+            <Text style={scoreCardStyles.buttonText}>-</Text>
+          </TouchableOpacity>
+          <View>
+            {holeNumber < 18 ? (
+              <TouchableOpacity
+                style={scoreCardStyles.submitButtonContainer}
+                onPress={finishHole}
+              >
+                <Text style={scoreCardStyles.buttonText}>NEXT HOLE</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={scoreCardStyles.submitButtonContainer}
+                onPress={endGame}
+              >
+                <Text style={scoreCardStyles.buttonText}>END GAME</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </>
+      ) : (
+        <>
+          <Text>Game Over!</Text>
+          <Text>You scored: {totalStrokes}</Text>
+        </>
+      )}
     </View>
   );
 };
@@ -75,9 +119,19 @@ const scoreCardStyles = StyleSheet.create({
   buttonContainer: {
     height: 100,
     width: 100,
-    backgroundColor: "rgba(225,225,225,0.2)"
+    backgroundColor: "#2980b6",
+    paddingVertical: 15,
+    marginVertical: 15
+  },
+  submitButtonContainer: {
+    height: 100,
+    width: 300,
+    backgroundColor: "#2980b6",
+    paddingVertical: 15,
+    marginVertical: 30
   },
   buttonText: {
+    textAlign: "center",
     fontSize: 40
   },
   holeNumberMessage: {
