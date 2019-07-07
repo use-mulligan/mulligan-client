@@ -13,7 +13,7 @@ const MainNavigator = createStackNavigator(
     PlayerForm: PlayerFormScreen
   },
   {
-    initialRouteName: "Home"
+    initialRouteName: "Login"
   }
 );
 
